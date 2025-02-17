@@ -20,25 +20,49 @@ interface Student {
 }
 
 class Gradebook<T extends Student> {
-  students = []
+  students: T[] = []
 
-  addStudent(student) {
+  addStudent(student: T): string {
+    this.students.push(student)
+    return `${student.name} added to the gradebook.`
+  }
+
+  addGrade(id: number, grade: Grade): string {
+    const student = this.students.find((student: Student) => student.id === id);
+    
+    if (!student) return `NO STUDENT`
+    
+    student.grades.push(grade);
+    return `Grade recorded for ${grade.subject}.`
 
   }
 
-  addGrade(id, grade) {
+  getAverageGrade(id: number): number | string {
+    const student = this.students.find((student: Student) => student.id === id);
+    
+    if (!student) return `NO STUDENT`
 
+    const sum = student.grades.reduce((prev,current)=>prev + current.grade,0)
+    return sum / student.grades.length
   }
 
-  getAverageGrade(id) {
+  getStudentGrades(id: number): Grade[] | string {
+    const student = this.students.find(student => student.id === id);
+    
+    if (!student) return `NO STUDENT`
 
+    return student.grades;
   }
 
-  getStudentGrades(id) {
+  updateSubjectGrade(id: number, subject: string, newGrade: number): Grade[] | string {
+    const student = this.students.find((student: Student) => student.id === id);
+    const grade = student.grades.find(grade=> grade.grade === grade.grade);
 
-  }
+    if (!student) return `NO STUDENT`;
 
-  updateSubjectGrade(id, subject, newGrade) {
+    grade.grade = newGrade;
+
+    return student.grades;
 
   }
 }
@@ -51,5 +75,6 @@ console.log(gradebook.addGrade(1, { subject: "Math", grade: 90 })); // "Grade re
 console.log(gradebook.addGrade(1, { subject: "English", grade: 80 })); // "Grade recorded for English."
 console.log(gradebook.addGrade(1, { subject: "Science", grade: 85 })); // "Grade recorded for Science."
 console.log(gradebook.getStudentGrades(1)); // Should return all grades for Alice
+console.log(gradebook.getStudentGrades(2)); // Should return all grades for Alice
 console.log(gradebook.getAverageGrade(1)); // Should return Alice's average grade
 console.log(gradebook.updateSubjectGrade(1, "English", 95)); // Should update Alice's English grade to 95
